@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { RegisterUserDTO } from '../../../domain/dto';
 import { AuthService } from './services/auth.service';
 import { CustomError } from '../../../domain';
+import { JWTGenerator } from '../../../config';
 
 export class AuthController {
     constructor(
@@ -26,8 +27,19 @@ export class AuthController {
             .catch(err => this.handleError(err, res))
     }
 
-    validateEmail = (req: Request, res: Response) => {
-        res.json('validateEmail')
+    validateEmail = async (req: Request<{ token: string }>, res: Response) => {
+        try {
+            const { token } = req.params;
 
+            const verified = await JWTGenerator.validateToken(token);
+
+            if (!verified) throw CustomError.unauthorized('Invalid or expired token');
+
+            await this.authService.validateEmail(token);
+
+            res.json('Email validated');
+        } catch (err) {
+            this.handleError(err, res);
+        }
     }
 }

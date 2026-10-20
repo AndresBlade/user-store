@@ -1,5 +1,6 @@
-import jwt from 'jsonwebtoken';
+import jwt, { Jwt, JwtPayload } from 'jsonwebtoken';
 import { envs } from './envs';
+import { ZodJWT } from 'zod';
 
 export class JWTGenerator {
     static async generateToken(payload: string | object, duration: number = 2 * 60 * 60) {
@@ -9,9 +10,14 @@ export class JWTGenerator {
                 resolve(token)
             })
         })
-    }
+    };
 
-    static validateToken(token: string): unknown {
-        throw new Error('Not implemented');
+    static validateToken<T extends JwtPayload>(token: string): Promise<T | null> {
+        return new Promise(resolve => {
+            jwt.verify(token, envs.JWT_SEED, (err, decoded) => {
+                if (err) return resolve(null);
+                resolve(decoded as T);
+            });
+        })
     }
 }

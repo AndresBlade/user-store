@@ -12,3 +12,7 @@ export const loginUserSchema = z.toZod<LoginUserDTO>()(z.object({
     email: z.email(),
     password: z.string().min(6)
 }))
+
+export const validateEmailParamsSchema = z.object({
+    token: z.jwt()
+})
