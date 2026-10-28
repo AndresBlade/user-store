@@ -8,7 +8,8 @@ const envSchema = z.object({
   MAILER_SERVICE: z.string(),
   MAILER_EMAIL: z.email(),
   MAILER_SECRET_KEY: z.string(),
-  WEBSERVICE_URL: z.string()
+  WEBSERVICE_URL: z.string(),
+  SEND_EMAIL: z.coerce.boolean()
 })
 
 export const envs = envSchema.parse(process.env);

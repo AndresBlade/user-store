@@ -24,7 +24,7 @@ export class AuthService {
 
         await user.save();
 
-        await this.sendValidationLinkEmail(registerUserDTO.email);
+        if (this.emailService.postToProvider) await this.sendValidationLinkEmail(registerUserDTO.email);
 
         const { password, ...rest } = new UserEntity(
             user.id,
@@ -35,9 +35,11 @@ export class AuthService {
             user.role
         );
 
+        const token = await JWTGenerator.generateToken({ id: user.id })
+
         return {
             user: rest,
-            token: 'abc'
+            token
         };
     }
 

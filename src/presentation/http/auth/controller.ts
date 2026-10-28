@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { RegisterUserDTO } from '../../../domain/dto';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './service/auth.service';
 import { CustomError } from '../../../domain';
 import { JWTGenerator } from '../../../config';
+import { LoginUserDTO } from '../../../domain/dto/auth/login-user.dto';
 
 export class AuthController {
     constructor(
@@ -21,7 +22,7 @@ export class AuthController {
             .catch(error => this.handleError(error, res));
     }
 
-    login = (req: Request, res: Response) => {
+    login = (req: Request<{}, {}, LoginUserDTO>, res: Response) => {
         this.authService.loginUser(req.body)
             .then(user => res.json(user))
             .catch(err => this.handleError(err, res))

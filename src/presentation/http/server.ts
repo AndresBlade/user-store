@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { NextFunction, Request, Response, Router } from 'express';
 import path from 'path';
 
 interface Options {
@@ -42,6 +42,15 @@ export class Server {
     this.app.get('/{*splat}', (req, res) => {
       const indexPath = path.join(__dirname + `../../../${this.publicPath}/index.html`);
       res.sendFile(indexPath);
+    });
+
+    //* Error Handler
+    this.app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+      console.error(err);
+
+      if (res.headersSent) return next(err);
+
+      res.status(500).json({ error: 'Internal server error' });
     });
 
 
